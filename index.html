@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 分钟倒计时</title>
+    <style>
+        body {
+            background-color: #e3fdfd;
+            color: #71c9ce;
+            text-align: center;
+        }
+
+        button {
+            padding: 15px 32px;
+            background-color: #71c9ce;
+        }
+
+        #timer {
+            font-size: 290px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>5 分钟倒计时</h1>
+    <h1 id="timer">05 : 00</h1>
+    <button onclick="init()">重置计时器</button>
+    <button id="startButton" onclick="go()">开始计时</button>
+    <button id="stopButton" onclick="stop()">停止计时</button>
+    <h3>Powered by CodingOIer(wanghongtiancodingoier@outlook.com)</h3>
+</body>
+
+<script>
+    const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+    min = 5;
+    second = 0
+    running = false
+    function init() {
+        running = false;
+        min = 5;
+        second = 0;
+        target.innerText = getTwo(min) + ' : ' + getTwo(second);
+        document.getElementById('startButton').disabled = false;
+    }
+    function getTwo(x) {
+        if (x < 10) {
+            return '0' + String(x);
+        }
+        else {
+            return String(x);
+        }
+    }
+    const go = async () => {
+        document.getElementById('stopButton').disabled = false;
+        running = true;
+        document.getElementById('startButton').disabled = true;
+        for (; (min >= 1 || second >= 1) && running;) {
+            await sleep(1000);
+            second--;
+            if (second < 0) {
+                min--;
+                second += 60;
+            }
+            console.log(min + ':' + second)
+            target = document.getElementById('timer');
+            target.innerText = getTwo(min) + ' : ' + getTwo(second);
+        }
+        if (running == true) {
+            await sleep(1000);
+            document.getElementById('startButton').disabled = true;
+            document.getElementById('stopButton').disabled = true;
+        }
+        running = false;
+    }
+    function stop() {
+        running = false;
+        document.getElementById('startButton').disabled = false;
+        document.getElementById('stopButton').disabled = true;
+    }
+    document.getElementById('stopButton').disabled = true;
+</script>
+
+</html>
