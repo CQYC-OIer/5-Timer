@@ -1,8 +1,10 @@
 <!DOCTYPE html>
+<!-- saved from url=(0035)https://cqyc-timer.codingoier.work/ -->
 <html lang="zh">
 
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>5 分钟倒计时</title>
     <style>
@@ -18,68 +20,97 @@
         }
 
         #timer {
-            font-size: 290px;
+            font-size: 200px;
+            /* 调整字体大小以适应毫秒显示 */
         }
     </style>
 </head>
 
 <body>
     <h1>5 分钟倒计时</h1>
-    <h1 id="timer">05 : 00</h1>
-    <button onclick="init()">重置计时器</button>
+    <font face="Courier New">
+        <h1 id="timer">05:00.000</h1>
+    </font> <!-- 修改了初始显示格式 -->
+    <button id='renewButton' onclick="init()">重置计时器</button>
     <button id="startButton" onclick="go()">开始计时</button>
-    <button id="stopButton" onclick="stop()">停止计时</button>
-    <h3>Powered by CodingOIer(wanghongtiancodingoier@outlook.com)</h3>
-</body>
+    <button id="stopButton" onclick="stop()" disabled="">停止计时</button>
+    <h3>Initial Version by CodingOIer (<a href="mailto:wanghongtiancodingoier@outlook.com">
+            <font color="#71c9ce">wanghongtiancodingoier@outlook.com</font>
+        </a>)</h3>
+    <h3>Modified & Enhanced by nr0728 (<a href="mailto:oier0728@gmail.com">
+            <font color="#71c9ce">oier0728@gmail.com</font>
+        </a>)</h3>
 
-<script>
-    const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
-    min = 5;
-    second = 0
-    running = false
-    function init() {
-        running = false;
-        min = 5;
-        second = 0;
-        target.innerText = getTwo(min) + ' : ' + getTwo(second);
-        document.getElementById('startButton').disabled = false;
-    }
-    function getTwo(x) {
-        if (x < 10) {
-            return '0' + String(x);
+
+    <script>
+        let min = 5;
+        let second = 0;
+        let running = false;
+        let startTime = 0;
+
+        function init() {
+            min = 5;
+            second = 0;
+            startTime = new Date();
+            FirstDisplay();
+            document.getElementById('startButton').disabled = false;
         }
-        else {
-            return String(x);
+
+        function getTwo(x) {
+            return x < 10 ? '0' + x : x;
         }
-    }
-    const go = async () => {
-        document.getElementById('stopButton').disabled = false;
-        running = true;
-        document.getElementById('startButton').disabled = true;
-        for (; (min >= 1 || second >= 1) && running;) {
-            await sleep(1000);
-            second--;
-            if (second < 0) {
-                min--;
-                second += 60;
+
+        function FirstDisplay() {
+            document.getElementById('timer').innerText = '05:00.000'; // 显示毫秒
+        }
+
+        function updateTimerDisplay() {
+            let now = new Date();
+            let elapsedMilliseconds = now - startTime - 300000;
+            let elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+            let remainingSeconds = (min * 60 + second) - elapsedSeconds;
+            let remainingMinutes = Math.floor(remainingSeconds / 60);
+            let remainingSecondsToShow = remainingSeconds % 60;
+            let remainingMillisecondsToShow = elapsedMilliseconds % 1000;
+            if (remainingMillisecondsToShow != 0) {
+                remainingSecondsToShow -= 1;
+                remainingMillisecondsToShow = 1000 - remainingMillisecondsToShow;
+                if (remainingSecondsToShow < 0) {
+                    remainingMinutes -= 1;
+                    remainingSecondsToShow = 59;
+                }
             }
-            console.log(min + ':' + second)
-            target = document.getElementById('timer');
-            target.innerText = getTwo(min) + ' : ' + getTwo(second);
+            document.getElementById('timer').innerText = getTwo(remainingMinutes) + ':' + getTwo(remainingSecondsToShow) + '.' + remainingMillisecondsToShow.toString().padStart(3, '0'); // 显示毫秒
         }
-        if (running == true) {
-            await sleep(1000);
+
+        const go = () => {
+            document.getElementById('renewButton').disabled = true;
+            document.getElementById('stopButton').disabled = false;
+            running = true;
             document.getElementById('startButton').disabled = true;
-            document.getElementById('stopButton').disabled = true;
+            startTime = new Date() - (min * 60 + second) * 1000;
+            const timerInterval = setInterval(() => {
+                if (!running) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+                updateTimerDisplay();
+                if (min <= 0 && second <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('startButton').disabled = true;
+                    document.getElementById('stopButton').disabled = true;
+                }
+            }, 50); // 50ms 更新一次显示
         }
-        running = false;
-    }
-    function stop() {
-        running = false;
-        document.getElementById('startButton').disabled = false;
+
+        function stop() {
+            running = false;
+            document.getElementById('startButton').disabled = false;
+            document.getElementById('stopButton').disabled = true;
+            document.getElementById('renewButton').disabled = false;
+        }
         document.getElementById('stopButton').disabled = true;
-    }
-    document.getElementById('stopButton').disabled = true;
-</script>
+    </script>
+</body>
 
 </html>
