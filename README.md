@@ -1,3 +1,3 @@
 # 5 Timer
 
-## An easy timer for Yujuan Sun
+## An easy timer for Ms. Sun
