@@ -69,7 +69,7 @@
         border-radius: 5px;
         font-family: Courier New, monospace;
         font-size: 14px;
-        width: 50px;
+        width: 120px;
     }
 </style>
 </head>
@@ -79,9 +79,9 @@
 <font face="Courier New"><h1 id="timer">05:00.000</h1></font>
 
 <div id="modifyContainer">
-    <input type="number" id="minuteInput" placeholder="分钟">
-    <input type="number" id="secondInput" placeholder="秒">
-    <input type="number" id="millisecondInput" placeholder="毫秒">
+    <input type="number" id="minuteInput" placeholder="分钟（默认 5）">
+    <input type="number" id="secondInput" placeholder="秒（默认 0）">
+    <input type="number" id="millisecondInput" placeholder="毫秒（默认 0）">
     <button id="modifyButton" onclick="modifyTimer()">保存</button>
 </div>
 
@@ -122,9 +122,15 @@ function init()
 
 function modifyTimer()
 {
-    let nmin=parseInt(document.getElementById('minuteInput').value);
-    let nsecond=parseInt(document.getElementById('secondInput').value);
-    let nmillisecond=parseInt(document.getElementById('millisecondInput').value);
+    let nmin=document.getElementById('minuteInput').value;
+    let nsecond=document.getElementById('secondInput').value;
+    let nmillisecond=document.getElementById('millisecondInput').value;
+    if(nmin=="") {nmin="5";}
+    if(nsecond=="") {nsecond="0";}
+    if(nmillisecond=="") {nmillisecond="0";}
+    nmin=parseInt(nmin);
+    nsecond=parseInt(nsecond);
+    nmillisecond=parseInt(nmillisecond);
     if(nmin<0||nmin>99)
     {
         alert('分钟数只能介于 0 和 99 之间！');
