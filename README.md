@@ -1,6 +1,6 @@
-## 5 Timer
+# Timer
 
-### $\textsf{\textbf{\color{red}{An easy timer for Ms. Sun.}}}$
+## $\textsf{{\color{red}{An easy timer with user-friendly UI and rich features.}}}$
 
 
 <h3>Initial Version by CodingOIer (<a href="mailto:wanghongtiancodingoier@outlook.com"><font color="#71c9ce">wanghongtiancodingoier@outlook.com</font></a>)</h3>
