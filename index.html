@@ -61,7 +61,7 @@
     {
         color: #666;
     }
-    input[type="number"]
+    input[type="text"]
     {
         padding: 5px;
         margin: 5px;
@@ -79,9 +79,9 @@
 <font face="Courier New"><h1 id="timer">05:00.000</h1></font>
 
 <div id="modifyContainer">
-    <input type="number" id="minuteInput" placeholder="分钟（默认 5）">
-    <input type="number" id="secondInput" placeholder="秒（默认 0）">
-    <input type="number" id="millisecondInput" placeholder="毫秒（默认 0）">
+    <input type="text" id="minuteInput" placeholder="分钟（默认 5）" oninput="validateInput(event)">
+    <input type="text" id="secondInput" placeholder="秒（默认 0）" oninput="validateInput(event)">
+    <input type="text" id="millisecondInput" placeholder="毫秒（默认 0）" oninput="validateInput(event)">
     <button id="modifyButton" onclick="modifyTimer()">保存</button>
 </div>
 
@@ -230,6 +230,18 @@ function stop()
     document.getElementById('renewButton').disabled=false;
 }
 document.getElementById('stopButton').disabled=true;
+
+
+
+function validateInput(event)
+{
+    const input=event.target;
+    const OK=['0','1','2','3','4','5','6','7','8','9'];
+    let value=input.value;
+    const lastChar=value.slice(-1);
+    if(!OK.includes(lastChar)){value=value.slice(0,-1);}
+    input.value=value;
+}
 </script>
 </body>
 </html>
