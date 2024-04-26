@@ -4,117 +4,226 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>5 分钟倒计时</title>
+<title>倒计时</title>
 <style>
-    body {
+    body
+    {
         background-color: #e3fdfd;
         color: #71c9ce;
         text-align: center;
     }
-
-    button {
-        padding: 15px 32px;
-        background-color: #71c9ce;
+    #timer
+    {
+        font-size: 200px;
     }
-
-    #timer {
-        font-size: 200px; /* 调整字体大小以适应毫秒显示 */
+    button
+    {
+        padding: 10px 20px;
+        background-color: #71c9ce;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        margin-bottom: 10px;
+    }
+    button:hover
+    {
+        background-color: #5ca8b6;
+    }
+    input[type="text"]
+    {
+        padding: 8px;
+        margin: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    #timer
+    {
+        font-size: 200px;
+    }
+    #modifyContainer
+    {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        text-align: right;
+    }
+    #modifyButton
+    {
+        margin-left: 5px;
+    }
+    button[disabled]
+    {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+    button[disabled] span
+    {
+        color: #666;
+    }
+    input[type="number"]
+    {
+        padding: 5px;
+        margin: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-family: Courier New, monospace;
+        font-size: 14px;
+        width: 50px;
     }
 </style>
 </head>
 
 <body>
-<h1>5 分钟倒计时</h1>
-<font face="Courier New"><h1 id="timer">05:00.000</h1></font> <!-- 修改了初始显示格式 -->
+<h1>倒计时</h1>
+<font face="Courier New"><h1 id="timer">05:00.000</h1></font>
+
+<div id="modifyContainer">
+    <input type="number" id="minuteInput" placeholder="分钟">
+    <input type="number" id="secondInput" placeholder="秒">
+    <input type="number" id="millisecondInput" placeholder="毫秒">
+    <button id="modifyButton" onclick="modifyTimer()">保存</button>
+</div>
+
+<h1 id="status"> 未开始计时 </h1>
+
 <button id='renewButton' onclick="init()">重置计时器</button>
 <button id="startButton" onclick="go()">开始计时</button>
 <button id="stopButton" onclick="stop()" disabled="">停止计时</button>
 <h3>Initial Version by CodingOIer (<a href="mailto:wanghongtiancodingoier@outlook.com"><font color="#71c9ce">wanghongtiancodingoier@outlook.com</font></a>)</h3>
 <h3>Modified & Enhanced by nr0728 (<a href="mailto:oier0728@gmail.com"><font color="#71c9ce">oier0728@gmail.com</font></a>)</h3>
+<h3>欢迎访问 <a href="https://github.com/nr0728/timer"><font color="#71c9ce">GitHub 仓库</font></a></h3>
 
 
 <script>
-let min = 5;
-let second = 0;
-let running = false;
-let startTime = 0;
-let isSetStartTime = 0;
-let setStartTime = 0;
+let min=5;
+let second=0;
+let millisecond=0;
+let totalMillisecond=300000;
+let running=false;
+let startTime=0;
+let isSetStartTime=0;
+let setStartTime=0;
 
-function init() {
-    min = 5;
-    second = 0;
-    startTime = new Date();
-    isSetStartTime = 0;
+function init()
+{
+    document.getElementById('modifyButton').disabled=false;
+    document.getElementById('minuteInput').disabled=false;
+    document.getElementById('secondInput').disabled=false;
+    document.getElementById('millisecondInput').disabled=false;
+    document.getElementById('timer').style.color='#71c9ce';
+    startTime=Number(new Date());
+    isSetStartTime=0;
+    document.getElementById('status').innerText='未开始计时';
+    document.getElementById('status').style.color='#71c9ce';
     FirstDisplay();
-    document.getElementById('startButton').disabled = false;
+    document.getElementById('startButton').disabled=false;
 }
 
-function getTwo(x) {
-    return x < 10 ? '0' + x : x;
-}
-
-function FirstDisplay() {
-    document.getElementById('timer').innerText = '05:00.000'; // 显示毫秒
-}
-
-function updateTimerDisplay() {
-    let now = new Date();
-    let elapsedMilliseconds = now - startTime - 300000;
-    let elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
-    let remainingSeconds = (min * 60 + second) - elapsedSeconds;
-    let remainingMinutes = Math.floor(remainingSeconds / 60);
-    let remainingSecondsToShow = remainingSeconds % 60;
-    let remainingMillisecondsToShow = elapsedMilliseconds % 1000;
-    if(remainingMillisecondsToShow != 0)
+function modifyTimer()
+{
+    let nmin=parseInt(document.getElementById('minuteInput').value);
+    let nsecond=parseInt(document.getElementById('secondInput').value);
+    let nmillisecond=parseInt(document.getElementById('millisecondInput').value);
+    if(nmin<0||nmin>99)
     {
-        remainingSecondsToShow -= 1;
-        remainingMillisecondsToShow = 1000 - remainingMillisecondsToShow;
-        if(remainingSecondsToShow < 0)
-        {
-            remainingMinutes -= 1;
-            remainingSecondsToShow = 59;
-        }
+        alert('分钟数只能介于 0 和 99 之间！');
+        return;
     }
-    document.getElementById('timer').innerText = getTwo(remainingMinutes) + ':' + getTwo(remainingSecondsToShow) + '.' + remainingMillisecondsToShow.toString().padStart(3, '0'); // 显示毫秒
+    if(nsecond<0||nsecond>59)
+    {
+        alert('分钟数只能介于 0 和 59 之间！');
+        return;
+    }
+    if(nmillisecond<0||nmillisecond>999)
+    {
+        alert('分钟数只能介于 0 和 999 之间！');
+        return;
+    }
+    min=nmin;
+    second=nsecond;
+    millisecond=nmillisecond;
+    totalMillisecond=min*60000+second*1000+millisecond;
+    FirstDisplay();
 }
 
-const go = () => {
-    document.getElementById('renewButton').disabled = true;
-    document.getElementById('stopButton').disabled = false;
-    running = true;
-    document.getElementById('startButton').disabled = true;
-    if (isSetStartTime)
+function getTwo(x)
+{
+    return x<10?'0'+x:x;
+}
+
+function FirstDisplay()
+{
+    document.getElementById('timer').innerText=getTwo(min)+':'+getTwo(second)+'.'+millisecond.toString().padStart(3,'0');
+}
+
+function updateTimerDisplay()
+{
+    let now=Number(new Date());
+    let elapsedMilliseconds=now-startTime;
+    if(elapsedMilliseconds>totalMillisecond)
     {
-        startTime = new Date() - setStartTime + startTime;
+        elapsedMilliseconds=totalMillisecond*2-elapsedMilliseconds;
+        document.getElementById('timer').style.color='#e74c3c';
+        document.getElementById('status').innerText='超时';
+        document.getElementById('status').style.color='#e74c3c';
     }
     else
     {
-        startTime = new Date() - (min * 60 + second) * 1000;
+        document.getElementById('timer').style.color='#71c9ce';
     }
-    const timerInterval = setInterval(() => {
-        if (!running) {
+    const remainingMilliseconds=totalMillisecond-elapsedMilliseconds;
+    const remainingMinutes=Math.floor(remainingMilliseconds/(60*1000));
+    const remainingSeconds=Math.floor((remainingMilliseconds%(60*1000))/1000);
+    const remainingMillisecondsToShow=remainingMilliseconds%1000;
+    console.log(remainingMinutes);
+    document.getElementById('timer').innerText=getTwo(remainingMinutes)+':'+getTwo(remainingSeconds)+'.'+remainingMillisecondsToShow.toString().padStart(3,'0');
+}
+
+const go=()=>
+{
+    document.getElementById('renewButton').disabled=true;
+    document.getElementById('stopButton').disabled=false;
+    running=true;
+    document.getElementById('startButton').disabled=true;
+    document.getElementById('modifyButton').disabled=true;
+    document.getElementById('status').innerText='正在计时';
+    document.getElementById('status').style.color='#71c9ce';
+    document.getElementById('minuteInput').disabled=true;
+    document.getElementById('secondInput').disabled=true;
+    document.getElementById('millisecondInput').disabled=true;
+    
+    if(isSetStartTime)
+    {
+        startTime+=Number(new Date())-setStartTime;
+    }
+    else
+    {
+        startTime=Number(new Date());
+    }
+    const timerInterval=setInterval(()=>
+    {
+        if(!running)
+        {
             clearInterval(timerInterval);
             return;
         }
         updateTimerDisplay();
-        if (min <= 0 && second <= 0) {
-            clearInterval(timerInterval);
-            document.getElementById('startButton').disabled = true;
-            document.getElementById('stopButton').disabled = true;
-        }
-    }, 5); // 5ms 更新一次显示
+    },5);
 }
 
-function stop() {
-    running = false;
-    isSetStartTime = 1;
-    setStartTime = new Date();
-    document.getElementById('startButton').disabled = false;
-    document.getElementById('stopButton').disabled = true;
-    document.getElementById('renewButton').disabled = false;
+function stop()
+{
+    running=false;
+    isSetStartTime=1;
+    setStartTime=Number(new Date());
+    document.getElementById('status').innerText='停止计时';
+    document.getElementById('status').style.color='#71c9ce';
+    document.getElementById('startButton').disabled=false;
+    document.getElementById('stopButton').disabled=true;
+    document.getElementById('renewButton').disabled=false;
 }
-document.getElementById('stopButton').disabled = true;
+document.getElementById('stopButton').disabled=true;
 </script>
 </body>
 </html>
