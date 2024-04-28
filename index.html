@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="zh">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="zh"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
     
 
 <style>
@@ -102,7 +101,7 @@
 
 <body>
 <h1>倒计时</h1>
-<font face="Courier New"><h1 id="timer">05:00.000</h1></font>
+<font face="Courier New"><h1 id="timer" style="color: rgb(113, 201, 206);">05:00.000</h1></font>
 
 <div id="modifyContainer">
     <input type="text" id="minuteInput" placeholder="分钟（默认 5）" oninput="validateInput2(event)">
@@ -111,17 +110,17 @@
     <button id="modifyButton" onclick="modifyTimer()" class="button button-glow button-rounded button-primary">保存</button>
 </div>
 
-<h1 id="status"> 未开始计时 </h1>
+<h1 id="status" style="color: rgb(113, 201, 206);">未开始计时</h1>
 
-<button id='renewButton' onclick="init()" class="button button-glow button-rounded button-primary">重置计时器</button>
+<button id="renewButton" onclick="init()" class="button button-glow button-rounded button-primary">重置计时器</button>
 <button id="startButton" onclick="go()" class="button button-glow button-rounded button-primary">开始计时</button>
-<button id="stopButton" onclick="stop()" disabled="" class="button button-glow button-rounded button-primary">停止计时</button>
+<button id="stopButton" onclick="stop()" class="button button-glow button-rounded button-primary" disabled="">停止计时</button>
 <h2 id="normal-text">Made by</h2>
 <h3 id="normal-text">CodingOIer (<a href="mailto:wanghongtiancodingoier@outlook.com"><font color="#71c9ce">wanghongtiancodingoier@outlook.com</font></a>)</h3>
 <h3 id="normal-text">nr0728 (<a href="mailto:oier0728@gmail.com"><font color="#71c9ce">oier0728@gmail.com</font></a>)</h3>
 <h2 id="normal-text">Welcome to visit</h2>
 <h3 id="normal-text"><a href="https://github.com/CodingOIer/5-Timer"><font color="#71c9ce">CodingOIer's GitHub repository</font></a> and <a href="https://github.com/nr0728/timer"><font color="#71c9ce">nr0728's GitHub repository</font></a></h3>
-<h4 id="normal-text">有 bug？使用暂无发现 bug 的<a href="./old.html"><font color="#71c9ce">旧版</font></a>。</h4>
+<h4 id="normal-text">有 bug？使用暂无发现 bug 的<a href="https://nr0728.github.io/timer/old.html"><font color="#71c9ce">旧版</font></a>。</h4>
 
 <script>
 let min=5;
@@ -151,7 +150,9 @@ async function dynamicUpdateDisplayIncreasing(now1,now2,now3,goto1,goto2,goto3)
         if(tt2>59) tt2=0,++tt1;
         ++cnt;
     }
-    tt1=now1,tt2=now2,tt3=now3,cnt=Math.max(Math.floor(cnt/80),1),cntt=0;
+    let ocnt=cnt;
+    tt1=now1,tt2=now2,tt3=now3,cnt=Math.floor(cnt/4000)*200,cntt=0;
+    if(cnt<1e-5) cnt=Math.floor(ocnt/10);
     while(tt1!=goto1||tt2!=goto2||tt3!=goto3)
     {
         ++tt3;
@@ -182,7 +183,9 @@ async function dynamicUpdateDisplayDecreasing(now1,now2,now3,goto1,goto2,goto3)
         if(tt2<0) tt2=59,--tt1;
         ++cnt;
     }
-    tt1=now1,tt2=now2,tt3=now3,cnt=Math.max(Math.floor(cnt/80),1),cntt=0;
+    let ocnt=cnt;
+    tt1=now1,tt2=now2,tt3=now3,cnt=Math.floor(cnt/4000)*200,cntt=0;
+    if(cnt<1e-5) cnt=Math.floor(ocnt/10);
     while(tt1!=goto1||tt2!=goto2||tt3!=goto3)
     {
         --tt3;
@@ -381,5 +384,6 @@ function validateInput3(event)
     if(!/^\d{0,3}$/.test(event.target.value)) event.target.value=event.target.value.replace(/[^\d]/g,'').substring(0,3);
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
