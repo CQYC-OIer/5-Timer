@@ -92,9 +92,9 @@
 <font face="Courier New"><h1 id="timer">05:00.000</h1></font>
 
 <div id="modifyContainer">
-    <input type="text" id="minuteInput" placeholder="分钟（默认 5）" oninput="validateInput(event)">
-    <input type="text" id="secondInput" placeholder="秒（默认 0）" oninput="validateInput(event)">
-    <input type="text" id="millisecondInput" placeholder="毫秒（默认 0）" oninput="validateInput(event)">
+    <input type="text" id="minuteInput" placeholder="分钟（默认 5）" oninput="validateInput2(event)">
+    <input type="text" id="secondInput" placeholder="秒（默认 0）" oninput="validateInput2(event)">
+    <input type="text" id="millisecondInput" placeholder="毫秒（默认 0）" oninput="validateInput3(event)">
     <button id="modifyButton" onclick="modifyTimer()" class="button button-glow button-rounded button-primary">保存</button>
 </div>
 
@@ -103,9 +103,11 @@
 <button id='renewButton' onclick="init()" class="button button-glow button-rounded button-primary">重置计时器</button>
 <button id="startButton" onclick="go()" class="button button-glow button-rounded button-primary">开始计时</button>
 <button id="stopButton" onclick="stop()" disabled="" class="button button-glow button-rounded button-primary">停止计时</button>
-<h3>Initial Version by CodingOIer (<a href="mailto:wanghongtiancodingoier@outlook.com"><font color="#71c9ce">wanghongtiancodingoier@outlook.com</font></a>)</h3>
-<h3>Modified & Enhanced by nr0728 (<a href="mailto:oier0728@gmail.com"><font color="#71c9ce">oier0728@gmail.com</font></a>)</h3>
-<h3>欢迎访问 <a href="https://github.com/nr0728/timer"><font color="#71c9ce">GitHub 仓库</font></a></h3>
+<h2>Made by</h2>
+<h3>CodingOIer (<a href="mailto:wanghongtiancodingoier@outlook.com"><font color="#71c9ce">wanghongtiancodingoier@outlook.com</font></a>)</h3>
+<h3>nr0728 (<a href="mailto:oier0728@gmail.com"><font color="#71c9ce">oier0728@gmail.com</font></a>)</h3>
+<h2>Welcome to visit</h2>
+<h3><a href="https://github.com/CodingOIer/5-Timer"><font color="#71c9ce">CodingOIer's GitHub repository</font></a> and <a href="https://github.com/nr0728/timer"><font color="#71c9ce">nr0728's GitHub repository</font></a></h3>
 
 
 <script>
@@ -117,9 +119,84 @@ let running=false;
 let startTime=0;
 let isSetStartTime=0;
 let setStartTime=0;
+let t1=[5,0,0];
+function sleep(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
 
-function init()
+async function dynamicUpdateDisplayIncreasing(now1,now2,now3,goto1,goto2,goto3)
 {
+    let tt1=now1,tt2=now2,tt3=now3,cnt=0;
+    while(tt1!=goto1||tt2!=goto2||tt3!=goto3)
+    {
+        // console.log([tt1,tt2,tt3]);
+        ++tt3;
+        if(tt3>999) tt3=0,++tt2;
+        if(tt2>59) tt2=0,++tt1;
+        ++cnt;
+    }
+    tt1=now1,tt2=now2,tt3=now3,cnt=Math.max(Math.floor(cnt/80),1),cntt=0;
+    while(tt1!=goto1||tt2!=goto2||tt3!=goto3)
+    {
+        ++tt3;
+        if(tt3>999) tt3=0,++tt2;
+        if(tt2>59) tt2=0,++tt1;
+        ++cntt;
+        // console.log([cnt,cntt]);
+        if(Math.abs(cntt-cnt)<1e-5)
+        {
+            cntt=0;
+            cntt=0;
+            await sleep(1);
+            updateInitDisplay(tt1,tt2,tt3);
+        }
+    }
+    updateInitDisplay(goto1,goto2,goto3);
+}
+
+async function dynamicUpdateDisplayDecreasing(now1,now2,now3,goto1,goto2,goto3)
+{
+    let tt1=now1,tt2=now2,tt3=now3,cnt=0;
+    while(tt1!=goto1||tt2!=goto2||tt3!=goto3)
+    {
+        // console.log([tt1,tt2,tt3]);
+        --tt3;
+        if(tt3<0) tt3=999,--tt2;
+        if(tt2<0) tt2=59,--tt1;
+        ++cnt;
+    }
+    tt1=now1,tt2=now2,tt3=now3,cnt=Math.max(Math.floor(cnt/80),1),cntt=0;
+    while(tt1!=goto1||tt2!=goto2||tt3!=goto3)
+    {
+        --tt3;
+        if(tt3<0) tt3=999,--tt2;
+        if(tt2<0) tt2=59,--tt1;
+        ++cntt;
+        // console.log([cnt,cntt]);
+        if(Math.abs(cntt-cnt)<1e-5)
+        {
+            cntt=0;
+            cntt=0;
+            await sleep(1);
+            updateInitDisplay(tt1,tt2,tt3);
+        }
+    }
+    updateInitDisplay(goto1,goto2,goto3);
+}
+
+async function setText(text)
+{
+    await sleep(1);
+    document.getElementById('status').innerText=text;
+}
+
+async function init()
+{
+    document.getElementById('startButton').disabled=true;
+    document.getElementById('stopButton').disabled=true;
+    document.getElementById('renewButton').disabled=true;
+    setText('未开始计时');
+    dynamicUpdateDisplayIncreasing(t1[0],t1[1],t1[2],min,second,millisecond);
     document.getElementById('modifyButton').disabled=false;
     document.getElementById('minuteInput').disabled=false;
     document.getElementById('secondInput').disabled=false;
@@ -127,10 +204,20 @@ function init()
     document.getElementById('timer').style.color='#71c9ce';
     startTime=Number(new Date());
     isSetStartTime=0;
-    document.getElementById('status').innerText='未开始计时';
     document.getElementById('status').style.color='#71c9ce';
     FirstDisplay();
     document.getElementById('startButton').disabled=false;
+    stop();
+}
+
+function timeLower(now1,now2,now3,goto1,goto2,goto3)
+{
+    if(now1<goto1) return 1;
+    if(now1>goto1) return 0;
+    if(now2<goto2) return 1;
+    if(now2>goto2) return 0;
+    if(now3<goto3) return 1;
+    return 0;
 }
 
 function modifyTimer()
@@ -159,11 +246,16 @@ function modifyTimer()
         alert('毫秒数只能介于 0 和 999 之间！');
         return;
     }
+
     min=nmin;
     second=nsecond;
     millisecond=nmillisecond;
     totalMillisecond=min*60000+second*1000+millisecond;
-    FirstDisplay();
+    let originalText=document.getElementById('status').innerText;
+    if(timeLower(t1[0],t1[1],t1[2],min,second,millisecond)) dynamicUpdateDisplayIncreasing(t1[0],t1[1],t1[2],min,second,millisecond);
+    else dynamicUpdateDisplayDecreasing(t1[0],t1[1],t1[2],min,second,millisecond);
+    t1=[min,second,millisecond];
+    document.getElementById('status').innerText=originalText;
 }
 
 function getTwo(x)
@@ -196,6 +288,12 @@ function updateTimerDisplay()
     const remainingSeconds=Math.floor((remainingMilliseconds%(60*1000))/1000);
     const remainingMillisecondsToShow=remainingMilliseconds%1000;
     console.log(remainingMinutes);
+    document.getElementById('timer').innerText=getTwo(remainingMinutes)+':'+getTwo(remainingSeconds)+'.'+remainingMillisecondsToShow.toString().padStart(3,'0');
+    return [remainingMinutes,remainingSeconds,remainingMillisecondsToShow];
+}
+
+function updateInitDisplay(remainingMinutes,remainingSeconds,remainingMillisecondsToShow)
+{
     document.getElementById('timer').innerText=getTwo(remainingMinutes)+':'+getTwo(remainingSeconds)+'.'+remainingMillisecondsToShow.toString().padStart(3,'0');
 }
 
@@ -236,6 +334,7 @@ function stop()
     running=false;
     isSetStartTime=1;
     setStartTime=Number(new Date());
+    t1=updateTimerDisplay();
     document.getElementById('status').innerText='停止计时';
     document.getElementById('status').style.color='#71c9ce';
     document.getElementById('startButton').disabled=false;
@@ -244,16 +343,13 @@ function stop()
 }
 document.getElementById('stopButton').disabled=true;
 
-
-
-function validateInput(event)
+function validateInput2(event)
 {
-    const input=event.target;
-    const OK=['0','1','2','3','4','5','6','7','8','9'];
-    let value=input.value;
-    const lastChar=value.slice(-1);
-    if(!OK.includes(lastChar)){value=value.slice(0,-1);}
-    input.value=value;
+    if(!/^\d{0,2}$/.test(event.target.value)) event.target.value=event.target.value.replace(/[^\d]/g,'').substring(0,2);
+}
+function validateInput3(event)
+{
+    if(!/^\d{0,3}$/.test(event.target.value)) event.target.value=event.target.value.replace(/[^\d]/g,'').substring(0,3);
 }
 </script>
 </body>
