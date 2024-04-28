@@ -88,13 +88,13 @@
 </head>
 
 <body>
-<h1>倒计时</h1>
+<h1>倒计时（旧版，推荐在无 bug 时使用<a href="./">新版</a>）</h1>
 <font face="Courier New"><h1 id="timer">05:00.000</h1></font>
 
 <div id="modifyContainer">
-    <input type="text" id="minuteInput" placeholder="分钟（默认 5）" oninput="validateInput(event)">
-    <input type="text" id="secondInput" placeholder="秒（默认 0）" oninput="validateInput(event)">
-    <input type="text" id="millisecondInput" placeholder="毫秒（默认 0）" oninput="validateInput(event)">
+    <input type="text" id="minuteInput" placeholder="分钟（默认 5）" oninput="validateInput2(event)">
+    <input type="text" id="secondInput" placeholder="秒（默认 0）" oninput="validateInput2(event)">
+    <input type="text" id="millisecondInput" placeholder="毫秒（默认 0）" oninput="validateInput3(event)">
     <button id="modifyButton" onclick="modifyTimer()" class="button button-glow button-rounded button-primary">保存</button>
 </div>
 
@@ -249,14 +249,13 @@ document.getElementById('stopButton').disabled=true;
 
 
 
-function validateInput(event)
+function validateInput2(event)
 {
-    const input=event.target;
-    const OK=['0','1','2','3','4','5','6','7','8','9'];
-    let value=input.value;
-    const lastChar=value.slice(-1);
-    if(!OK.includes(lastChar)){value=value.slice(0,-1);}
-    input.value=value;
+    if(!/^\d{0,2}$/.test(event.target.value)) event.target.value=event.target.value.replace(/[^\d]/g,'').substring(0,2);
+}
+function validateInput3(event)
+{
+    if(!/^\d{0,3}$/.test(event.target.value)) event.target.value=event.target.value.replace(/[^\d]/g,'').substring(0,3);
 }
 </script>
 </body>
