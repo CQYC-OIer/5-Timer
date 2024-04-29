@@ -9,4 +9,4 @@
 <h2>Welcome to visit</h2>
 <h3><a href="https://github.com/CodingOIer/5-Timer"><font color="#71c9ce">CodingOIer's GitHub repository</font></a> and <a href="https://github.com/nr0728/timer"><font color="#71c9ce">nr0728's GitHub repository</font></a></h3>
 
-Short Link: <https://3mw.cn/11112>
+### [Demo](https://nr0728.github.io/timer) & Short Link(<https://3mw.cn/11112>)
