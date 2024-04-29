@@ -52,17 +52,6 @@
     #timer
     {
         font-size: 200px;
-        position: relative;
-        z-index: 1;
-    }
-    #timerCircle,#remainCircle,#innerCircle
-    {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        border-radius: 50%;
-        background-color: #71c9ce;
     }
     #modifyContainer
     {
@@ -112,12 +101,7 @@
 
 <body>
 <h1>倒计时</h1>
-<div id="timerContainer" style="position: relative; display: inline-block;">
-    <div id="remainCircle" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; background-color: #eee; z-index: 0;"></div>
-    <div id="innerCircle" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; background-color: #e3fdfd; z-index: 0;"></div>
-    <div id="timerCircle" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; background-color: rgba(114, 514, 191, 0.5); z-index: 0;"></div>
-    <font face="Courier New"><h1 id="timer" style="color: rgb(113, 201, 206); z-index: 1;">05:00.000</h1></font>
-</div>
+<font face="Courier New"><h1 id="timer" style="color: rgb(113, 201, 206);">05:00.000</h1></font>
 
 <div id="modifyContainer">
     <input type="text" id="minuteInput" placeholder="分钟（默认 5）" oninput="validateInput2(event)">
@@ -149,7 +133,6 @@ let isSetStartTime=0;
 let setStartTime=0;
 let t1=[5,0,0];
 let timeOuted=0;
-let reset=1;
 
 function sleep(milliseconds)
 {
@@ -230,7 +213,6 @@ async function setText(text)
 
 async function init()
 {
-    reset=1;
     document.getElementById('startButton').disabled=true;
     document.getElementById('stopButton').disabled=true;
     document.getElementById('renewButton').disabled=true;
@@ -347,7 +329,6 @@ function updateInitDisplay(remainingMinutes,remainingSeconds,remainingMillisecon
 
 const go=()=>
 {
-    reset=0;
     document.getElementById('renewButton').disabled=true;
     document.getElementById('stopButton').disabled=false;
     running=true;
@@ -402,46 +383,6 @@ function validateInput3(event)
 {
     if(!/^\d{0,3}$/.test(event.target.value)) event.target.value=event.target.value.replace(/[^\d]/g,'').substring(0,3);
 }
-
-async function updateCircleSize(percentage)
-{
-    await sleep(1);
-    const timerContainerWidth=document.getElementById('timerContainer').offsetWidth;
-    const timerContainerHeight=document.getElementById('timerContainer').offsetHeight;
-    const diameter=Math.min(timerContainerWidth, timerContainerHeight);
-    const maxRadius=diameter/2;
-    const minRadius=0;
-    const currentRadius=minRadius+(maxRadius-minRadius)*percentage;
-    timerCircle.style.width=`${currentRadius*2}px`;
-    timerCircle.style.height=`${currentRadius*2}px`;
-    if(!reset)
-    {
-        remainCircle.style.width=`${maxRadius*2}px`;
-        remainCircle.style.height=`${maxRadius*2}px`;
-        innerCircle.style.width=`${maxRadius*2-10}px`;
-        innerCircle.style.height=`${maxRadius*2-10}px`;
-    }
-    else
-    {
-        remainCircle.style.width=`0px`;
-        remainCircle.style.height=`0px`;
-        innerCircle.style.width=`0px`;
-        innerCircle.style.height=`0px`;
-    }
-}
-
-function updateCircle()
-{
-    const now=Number(new Date());
-    const elapsedMilliseconds=now-startTime;
-    let percentage=elapsedMilliseconds/totalMillisecond;
-    if(reset) percentage=1;
-    if(percentage>1) percentage=1;
-    updateCircleSize(1-percentage);
-}
-
-
-const circleUpdateInterval=setInterval(updateCircle, 10);
 </script>
 
 </body>
