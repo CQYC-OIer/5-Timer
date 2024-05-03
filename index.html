@@ -62,7 +62,20 @@
     }
     #modifyButton
     {
+        font-family: 'Google Sans';
         margin-left: 5px;
+    }
+    #startButton
+    {
+        font-family: 'Google Sans';
+    }
+    #stopButton
+    {
+        font-family: 'Google Sans';
+    }
+    #renewButton
+    {
+        font-family: 'Google Sans';
     }
     button[disabled]
     {
@@ -85,6 +98,10 @@
         font-family: 'Google Sans', Arial;
         line-height: 1.0; 
     }
+    #status
+    {
+        font-family: 'Google Sans', Arial;
+    }
     input[type="text"]
     {
         padding: 5px;
@@ -93,14 +110,46 @@
         border-radius: 5px;
         font-family: 'Google Sans', Arial;
         font-size: 15px;
-        width: 120px;
+        width: 160px;
         height: 25px;
+    }
+    #language-switch {
+      font-family: 'Google Sans', Arial;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+    }
+    /* Style for language options */
+    #language-options {
+      font-family: 'Google Sans', Arial;
+      display: none;
+      position: fixed;
+      top: 50px;
+      left: 10px;
+      background-color: #71c9ce;
+      border: 1px solid #A2DFD0;
+      border-radius: 5px;
+      padding: 5px;
+      width: 140px;
+    }
+    #language-options a {
+      display: block;
+      padding: 5px;
+      text-decoration: none;
+      color: #333;
+    }
+    #language-options a:hover {
+      background-color: #A2DFD0;
+    }
+    #title
+    {
+      font-family: 'Google Sans', Arial;
     }
 </style>
 </head>
 
 <body>
-<h1>倒计时</h1>
+<h1 id="title">倒计时</h1>
 <font face="Courier New"><h1 id="timer" style="color: rgb(113, 201, 206);">05:00.000</h1></font>
 
 <div id="modifyContainer">
@@ -109,7 +158,13 @@
     <input type="text" id="millisecondInput" placeholder="毫秒（默认 0）" oninput="validateInput3(event)">
     <button id="modifyButton" onclick="modifyTimer()" class="button button-glow button-rounded button-primary">保存</button>
 </div>
+  <button id="language-switch" class="button button-glow button-rounded button-primary">Language</button>
 
+  <!-- Language options -->
+  <div id="language-options">
+    <a href="#" id="english"><font color="white">English</font></a>
+    <a href="#" id="chinese"><font color="white">简体中文</font></a>
+  </div>
 <h1 id="status" style="color: rgb(113, 201, 206);">未开始计时</h1>
 
 <button id="renewButton" onclick="init()" class="button button-glow button-rounded button-primary">重置计时器</button>
@@ -120,9 +175,126 @@
 <h3 id="normal-text">nr0728 (<a href="mailto:oier0728@gmail.com"><font color="#71c9ce">oier0728@gmail.com</font></a>)</h3>
 <h2 id="normal-text">Welcome to visit</h2>
 <h3 id="normal-text"><a href="https://github.com/CodingOIer/5-Timer"><font color="#71c9ce">CodingOIer's GitHub repository</font></a> and <a href="https://github.com/nr0728/timer"><font color="#71c9ce">nr0728's GitHub repository</font></a></h3>
-<h4 id="normal-text">有 bug？使用暂无发现 bug 的<a href="https://nr0728.github.io/timer/old.html"><font color="#71c9ce">旧版</font></a>。</h4>
+<h4 id="normal-text">有 bug？使用暂无发现 bug 的<a href="https://nr0728.github.io/timer/old.html"><font color="#71c9ce">旧版</font></a></h4>
 
 <script>
+let nowlang='en';
+
+var langText = {
+    'en': {
+        '倒计时': 'Countdown Timer',
+        '未开始计时': 'Not Started',
+        '分钟（默认 5）': 'Minutes (Default 5)',
+        '秒（默认 0）': 'Seconds (Default 0)',
+        '毫秒（默认 0）': 'Milliseconds (Default 0)',
+        '有 bug？使用暂无发现 bug 的': 'Got a bug? Use a version with no bugs found yet: ',
+        '旧版': 'Click here',
+        '开始计时': 'Start Timing',
+        '重置计时器': 'Reset Timer',
+        '停止计时': 'Stop Timing',
+        '保存': 'Save',
+        '正在计时': 'Now Timing',
+        '超时': 'Time Out'
+    },
+    'zh': {
+        'Countdown Timer': '倒计时',
+        'Not Started': '未开始计时',
+        'Minutes (Default 5)': '分钟（默认 5）',
+        'Seconds (Default 0)': '秒（默认 0）',
+        'Milliseconds (Default 0)': '毫秒（默认 0）',
+        'Got a bug? Use a version with no bugs found yet: ': '有 bug？使用暂无发现 bug 的',
+        'Click here': '旧版',
+        'Start Timing': '开始计时',
+        'Reset Timer': '重置计时器',
+        'Stop Timing': '停止计时',
+        'Save': '保存',
+        'Now Timing': '正在计时',
+        'Time Out': '超时',
+    }
+};
+
+function translatePage(language) {
+    // 获取当前语言对应的文本对象
+    var currentLangText = langText[language];
+
+    // 递归函数，用于翻译节点中的文本
+    function translateNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            // 如果是文本节点，检查文本内容是否包含关键字
+            Object.keys(currentLangText).forEach(function(key) {
+                if (node.textContent.includes(key)) {
+                    node.textContent = node.textContent.replace(key, currentLangText[key]);
+                }
+            });
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            // 如果是元素节点
+            if (node.tagName.toLowerCase() === 'input') {
+                // 如果是输入框，检查 placeholder 是否包含关键字
+                var placeholder = node.getAttribute('placeholder');
+                if (placeholder) {
+                    Object.keys(currentLangText).forEach(function(key) {
+                        if (placeholder.includes(key)) {
+                            node.setAttribute('placeholder', placeholder.replace(key, currentLangText[key]));
+                        }
+                    });
+                }
+            } else if (node.childNodes && node.childNodes.length > 0) {
+                // 递归处理子节点
+                for (var i = 0; i < node.childNodes.length; i++) {
+                    translateNode(node.childNodes[i]);
+                }
+            }
+        }
+    }
+
+    // 遍历页面中的所有节点
+    translateNode(document.body);
+}
+
+
+setInterval(function() {
+    translatePage(nowlang);
+}, 10);
+
+
+    // JavaScript to handle language switching
+    document.addEventListener('DOMContentLoaded', function() {
+      var languageSwitch = document.getElementById('language-switch');
+      var languageOptions = document.getElementById('language-options');
+      var englishOption = document.getElementById('english');
+      var chineseOption = document.getElementById('chinese');
+
+      // Check user's browser language preference
+      var userLanguage = navigator.language || navigator.userLanguage;
+      var defaultLanguage = userLanguage.startsWith('zh') ? 'zh' : 'en';
+
+      // Set initial language
+      nowlang = defaultLanguage;
+      languageOptions.style.display = 'none';
+      // Toggle language options display
+      languageSwitch.addEventListener('click', function() {
+        if (languageOptions.style.display === 'none') {
+          languageOptions.style.display = 'block';
+        } else {
+          languageOptions.style.display = 'none';
+        }
+      });
+
+      // Handle language option clicks
+      englishOption.addEventListener('click', function(event) {
+        event.preventDefault();
+        nowlang = 'en';
+        languageOptions.style.display = 'none';
+      });
+
+      chineseOption.addEventListener('click', function(event) {
+        event.preventDefault();
+        nowlang = 'zh';
+        languageOptions.style.display = 'none';
+      });
+    });
+
+
 let min=5;
 let second=0;
 let millisecond=0;
@@ -304,9 +476,13 @@ function updateTimerDisplay()
     {
         timeOuted=1;
         elapsedMilliseconds=totalMillisecond*2-elapsedMilliseconds;
-        document.getElementById('timer').style.color='#e74c3c';
-        document.getElementById('status').innerText='超时';
-        document.getElementById('status').style.color='#e74c3c';
+        if(document.getElementById('timer').style.color!=='#e74c3c'&&document.getElementById('timer').style.color!=='rgb(231, 76, 60)')
+        {
+            console.log(document.getElementById('timer').style.color);
+            document.getElementById('timer').style.color='#e74c3c';
+            document.getElementById('status').innerText='超时';
+            document.getElementById('status').style.color='#e74c3c';
+        }
     }
     else
     {
